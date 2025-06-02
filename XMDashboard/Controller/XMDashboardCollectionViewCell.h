@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) UIView *componentView;
 
 - (void)updateWithComponent:(id<XMDashboardComponent>)component;
+- (void)willBeginUpdate;
 
 @end
 

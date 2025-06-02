@@ -8,10 +8,19 @@
 #import <Foundation/Foundation.h>
 
 typedef void(^XMEventBusBlock) (NSDictionary * _Nullable info);
+typedef void(^XMEventHandler) (id _Nullable event);
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface XMEventToken : NSObject
+
+@end
+
+@interface XMEventWrapper : NSObject
+
+@property (nonatomic, weak) id target;
+@property (nonatomic, copy) void(^handler)(id);
+@property (nonatomic, strong) XMEventToken *token;
 
 @end
 
@@ -24,7 +33,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 // target销毁时自动解绑
-- (void)subscribe:(NSString *)event target:(id)target handler:(XMEventBusBlock)handler;
+- (XMEventToken *)subscribe:(Class)eventClass target:(id)target handler:(XMEventHandler)handler;
+
+- (void)unsubscribe:(XMEventToken *)token;
+
+- (void)post:(id)event;
+
+- (void)postOnMainThread:(id)event;
 
 @end
 

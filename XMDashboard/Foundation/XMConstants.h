@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-typedef void(^KTBlock)(void);
+typedef void(^XMBlock)(void);
 
 #define SafeBlock(block, ...) if (block) { block(__VA_ARGS__); }
 
@@ -25,15 +25,15 @@ typedef void(^KTBlock)(void);
     castedObject;                                            \
 })
 
-UIKIT_STATIC_INLINE UIImage * kt_alwaysTemplateImage(NSString *imageName) {
+UIKIT_STATIC_INLINE UIImage * xm_alwaysTemplateImage(NSString *imageName) {
     return [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 #define KTRGBAColor(r, g, b, a) ([UIColor colorWithRed:(r/255.0f) green:(g/255.0f) blue:(b/255.0f) alpha:(a)])
 #define KTRGBColor(r, g, b) KTRGBAColor(r, g, b, 1.f)
 
-#define KTClearColor [UIColor clearColor]
-#define KTBlackColor [UIColor blackColor]
-#define KTWhiteColor [UIColor whiteColor]
+#define XMClearColor [UIColor clearColor]
+#define XMBlackColor [UIColor blackColor]
+#define XMWhiteColor [UIColor whiteColor]
 
 

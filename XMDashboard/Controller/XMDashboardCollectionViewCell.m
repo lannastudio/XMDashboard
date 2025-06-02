@@ -20,4 +20,8 @@
     component.xm_view.frame = self.contentView.bounds;
 }
 
+- (void)willBeginUpdate {
+    // 展示placeholder
+}
+
 @end

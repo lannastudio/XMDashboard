@@ -5,9 +5,10 @@
 //  Created by lannastudio on 2025/5/17.
 //
 
-#import "XMDashboardViewController.h"
-#import "XMDashboardComponentManager.h"
 #import "XMDashboardCollectionViewCell.h"
+#import "XMDashboardComponentManager.h"
+#import "XMDashboardViewController.h"
+#import "XMDashboardViewModel.h"
 
 static NSString * const XMDashboardCollectionViewCellId = @"com.lannastudio.dashboard.XMDashboardCollectionViewCellId";
 
@@ -16,6 +17,7 @@ static NSString * const XMDashboardCollectionViewCellId = @"com.lannastudio.dash
 @property (nonatomic, strong) UICollectionView *collectionView;
 
 @property (nonatomic, strong) XMDashboardComponentManager *componentManager;
+@property (nonatomic, strong) XMDashboardViewModel *viewModel;
 
 @end
 
@@ -62,7 +64,8 @@ static NSString * const XMDashboardCollectionViewCellId = @"com.lannastudio.dash
     WS
     [[_componentManager allComponents] xm_each:^(id<XMDashboardComponent> component) {
         component.container = weak_self;
-        component.containerView = weak_self.collectionView;
+        component.containerView = weak_self.view;
+        component.dashboardViewModel = weak_self.viewModel;
     }];
 }
 
@@ -72,6 +75,25 @@ static NSString * const XMDashboardCollectionViewCellId = @"com.lannastudio.dash
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
+    }];
+}
+
+- (void)reloadData {
+    // loading animation
+    WS
+    [[weak_self.collectionView visibleCells] xm_each:^(UICollectionViewCell *cell) {
+        XMDashboardCollectionViewCell *dashboardCell = XMSAFE_CAST(cell, XMDashboardCollectionViewCell);
+        [dashboardCell willBeginUpdate];
+    }];
+
+    [self.viewModel requestWithCompletion:^(NSError *error) {
+        // end loading animation
+        [weak_self.componentManager reloadAllComponents];
+
+        NSIndexSet *allSections = [NSIndexSet indexSetWithIndex:0];
+        [weak_self.collectionView performBatchUpdates:^{
+            [weak_self.collectionView reloadSections:allSections];
+        } completion:nil];
     }];
 }
 
@@ -86,6 +108,12 @@ static NSString * const XMDashboardCollectionViewCellId = @"com.lannastudio.dash
     id<XMDashboardComponent> component = [_componentManager.allComponents safe_objectAtIndex:indexPath.item];
     [cell updateWithComponent:component];
     return cell;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    id<XMDashboardComponent> component = [_componentManager.allComponents safe_objectAtIndex:indexPath.item];
+    // 父类已经实现默认值，不需要判断responseToSelector
+    return [component xm_size];
 }
 
 #pragma mark - getter

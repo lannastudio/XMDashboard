@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DashboardBaseModel : NSObject
 
+- (NSString *)componentIdentifier;
+
 @end
 
 NS_ASSUME_NONNULL_END

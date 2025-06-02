@@ -7,6 +7,14 @@
 
 #import "XMDashboardViewModel.h"
 
+@interface XMDashboardViewModel ()
+
+@end
+
 @implementation XMDashboardViewModel
+
+- (void)requestWithCompletion:(void (^)(NSError *))completion {
+
+}
 
 @end

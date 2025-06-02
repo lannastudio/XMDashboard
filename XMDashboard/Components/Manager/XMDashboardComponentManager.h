@@ -11,9 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XMDashboardComponentManager : NSObject
 
-@property (nonatomic, copy) KTBlock requestWillBeginBlock;
-@property (nonatomic, copy) void(^requestDidEndBlock)(NSError * _Nullable error);
-
 - (void)triggerEvent:(SEL)selector;
 - (NSArray *)allComponents;
 - (void)reloadAllComponents;

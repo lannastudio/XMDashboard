@@ -9,4 +9,9 @@
 
 @implementation DashboardBaseModel
 
+- (NSString *)componentIdentifier {
+    // 子类实现
+    return @"";
+}
+
 @end

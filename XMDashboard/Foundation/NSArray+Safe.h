@@ -9,7 +9,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSArray_Safe : NSObject
+@interface NSArray (Safe)
+
+- (id)safe_objectAtIndex:(NSInteger)index;
+- (id)safe_firstObject;
+- (id)safe_lastObject;
 
 @end
 

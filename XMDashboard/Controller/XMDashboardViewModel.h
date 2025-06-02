@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XMDashboardViewModel : NSObject
 
+- (void)requestWithCompletion:(void(^)(NSError *error))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

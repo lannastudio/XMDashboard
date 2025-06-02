@@ -9,7 +9,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSArray_XMExtension : NSObject
+@interface NSArray (XMExtension)
+
+- (void)xm_each:(void (^)(id obj))block;
+- (id)xm_match:(BOOL (^)(id obj))block;
+- (NSArray *)xm_select:(BOOL (^)(id obj))block;
+- (NSArray *)xm_map:(id (^)(id obj))block;
+- (NSArray *)xm_safe_map:(id (^)(id obj))block;
 
 @end
 

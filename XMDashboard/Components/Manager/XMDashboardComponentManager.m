@@ -73,19 +73,10 @@
     }];
 }
 
-// 统一更新component，工程化需要解藕，让component管理自己的请求
-// 这里dashboard页面单一 + dashboard是一个整体，所以统一请求
 - (void)reloadAllComponents {
-    // model 生成identifier，根据identifier确定更新的component
-    SafeBlock(self.requestWillBeginBlock);
-
-    // 请求后更新component
-
     [self.allComponents xm_each:^(id<XMDashboardComponent> component) {
-//        [component reloadWithData:data]
+        [component reloadData];
     }];
-
-    SafeBlock(self.requestDidEndBlock, nil);
 }
 
 @end

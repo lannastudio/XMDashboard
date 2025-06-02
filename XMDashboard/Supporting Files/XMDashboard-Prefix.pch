@@ -8,7 +8,17 @@
 #ifndef XMDashboard_Prefix_pch
 #define XMDashboard_Prefix_pch
 
-// Include any system framework and library headers here that should be included in all compilation units.
-// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+#ifdef __OBJC__
+
+#import "CollectionUtil.h"
+#import "NSArray+Safe.h"
+#import "NSArray+XMExtension.h"
+#import "NSMutableArray+Safe.h"
+#import "XMConstants.h"
+#import "XMDashboardComponent.h"
+#import "XMStringUtil.h"
+#import <Masonry/Masonry.h>
+
+#endif
 
 #endif /* XMDashboard_Prefix_pch */

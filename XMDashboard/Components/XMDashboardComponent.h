@@ -10,6 +10,7 @@
 @required
 @property (nonatomic, weak) UIViewController *container;
 @property (nonatomic, weak) UIView *containerView;
+@property (nonatomic, weak) id dashboardViewModel;
 
 - (void)componentDidLoad;
 - (void)componentWillAppear;

@@ -11,6 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CollectionUtil : NSObject
 
++ (BOOL (^)(id collection))isEmpty;
++ (BOOL (^)(id collection))isNotEmpty;
+
 @end
 
 NS_ASSUME_NONNULL_END

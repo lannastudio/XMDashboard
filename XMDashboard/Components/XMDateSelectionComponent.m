@@ -7,6 +7,12 @@
 
 #import "XMDateSelectionComponent.h"
 
+@interface XMDateSelectionComponent ()
+
+@end
+
 @implementation XMDateSelectionComponent
+
+
 
 @end

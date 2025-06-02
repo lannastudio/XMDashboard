@@ -7,6 +7,4 @@
 
 #import "XMComponentConstants.h"
 
-@implementation XMComponentConstants
-
-@end
+NSString * const XMTransactionComponentIdentifier = @"XMTransactionComponentIdentifier";

@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XMExtensionButton : UIButton
 
+@property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
 @end
 
 NS_ASSUME_NONNULL_END
