@@ -23,7 +23,8 @@
 // 创建实例，多个页面使用，方便拓展
 - (instancetype)init {
     return [self initWithOrder:@[
-        XMTransactionComponentIdentifier,
+        XMDashboardSectionsComponentIdentifier,
+        XMTagHeaderComponentIdentifier,
     ]];
 }
 

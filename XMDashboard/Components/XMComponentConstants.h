@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString * const XMTransactionComponentIdentifier;
+extern NSString * const XMTagHeaderComponentIdentifier;
+extern NSString * const XMDashboardSectionsComponentIdentifier;
 
 NS_ASSUME_NONNULL_END

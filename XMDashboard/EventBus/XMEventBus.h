@@ -33,13 +33,21 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 // target销毁时自动解绑
-- (XMEventToken *)subscribe:(Class)eventClass target:(id)target handler:(XMEventHandler)handler;
+- (XMEventToken *)subscribeEventClass:(Class)eventClass
+                               target:(id)target
+                              handler:(XMEventHandler)handler;
+
+- (XMEventToken *)subscribeEventName:(NSString *)eventName
+                              target:(id)target
+                             handler:(XMEventHandler)handler;
 
 - (void)unsubscribe:(XMEventToken *)token;
 
 - (void)post:(id)event;
+- (void)post:(NSString *)eventName withObject:(id)object;
 
 - (void)postOnMainThread:(id)event;
+- (void)postOnMainThread:(id)eventName withObject:(id)object;
 
 @end
 

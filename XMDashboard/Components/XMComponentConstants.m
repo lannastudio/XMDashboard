@@ -7,4 +7,5 @@
 
 #import "XMComponentConstants.h"
 
-NSString * const XMTransactionComponentIdentifier = @"XMTransactionComponentIdentifier";
+NSString * const XMTagHeaderComponentIdentifier = @"XMTagHeaderComponentIdentifier";
+NSString * const XMDashboardSectionsComponentIdentifier = @"XMDashboardSectionsComponentIdentifier";

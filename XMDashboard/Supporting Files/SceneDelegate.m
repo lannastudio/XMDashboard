@@ -22,6 +22,7 @@
 
     XMDashboardViewController *dashboardController = [[XMDashboardViewController alloc] init];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:dashboardController];
+    [navigationController setNavigationBarHidden:YES];
 
     self.window.rootViewController = navigationController;
 
