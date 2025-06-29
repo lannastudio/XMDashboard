@@ -45,7 +45,7 @@
 #pragma mark - private
 
 - (void)_registerComponent:(id<XMDashboardComponent>)component identifier:(NSString *)identifier {
-    if (XMStringUtil.isNotBlank(identifier)) {
+    if (StringUtil.isNotBlank(identifier)) {
         _componentMap[identifier] = component;
     }
 }

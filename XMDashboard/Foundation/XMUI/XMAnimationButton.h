@@ -9,8 +9,8 @@
 
 typedef NS_OPTIONS(NSUInteger, XMAnimationButtonFeedback) {
     XMAnimationButtonFeedbackNone = 0,
-    XMAnimationButtonFeedbackEnd = 1,
-    XMAnimationButtonFeedbackBegin = 1 << 1,
+    XMAnimationButtonFeedbackEnd = 1 << 1,
+    XMAnimationButtonFeedbackBegin = 1 << 2,
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,15 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) CGFloat usingSpringWithDamping;
 
-@property (nonatomic, assign) XMAnimationButtonFeedback feedbackStyle;
-
-/// 需要同时设置feedbackStyle为end，不然不生效
-@property (nonatomic, assign) BOOL impactFeedbackDifferentWhenTouchEnd;
+@property (nonatomic, assign) XMAnimationButtonFeedback feedbackOptions;
 
 @property (nonatomic, assign) CGFloat animationDuration;
-
-@property (nonatomic, strong) UIColor *kt_backgroundColor;
-@property (nonatomic, strong) UIColor *kt_selectionColor;
 
 @end
 

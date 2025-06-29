@@ -49,8 +49,6 @@
 }
 
 - (void)_registerEvent {
-    __weak typeof(self) weakSelf = self;
-
     [self.eventBus subscribeEventName:XMDashboardSectionCollectionViewDidScrollEventName
                                target:self
                               handler:^(UIScrollView *scrollView) {

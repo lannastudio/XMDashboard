@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface XMStringUtil : NSObject
+@interface StringUtil : NSObject
 
 + (BOOL (^)(NSString *string))isNotBlank;
 + (BOOL (^)(NSString *string))isBlank;

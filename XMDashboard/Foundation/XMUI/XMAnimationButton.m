@@ -9,82 +9,26 @@
 
 @implementation XMAnimationButton
 
-- (instancetype)init
-{
-    self = [super init];
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
     if (self) {
-        _impactFeedbackDifferentWhenTouchEnd = YES;
+        _feedbackOptions = XMAnimationButtonFeedbackBegin | XMAnimationButtonFeedbackEnd;
+        _initialSpringVelocity = 6;
+        _usingSpringWithDamping = 0.33;
+        _scale = 0.95;
+        _animationDuration = 0.32;
     }
     return self;
 }
 
-- (CGFloat)initialSpringVelocity {
-    if (!_initialSpringVelocity) {
-        return 6.f;
-    }
-    return _initialSpringVelocity;
-}
-
-- (CGFloat)usingSpringWithDamping {
-    if (!_usingSpringWithDamping) {
-        return 0.33;
-    }
-    return _usingSpringWithDamping;
-}
-
-- (CGFloat)scale {
-    if (!_scale) {
-        return 0.94;
-    }
-    return _scale;
-}
-
-- (CGFloat)animationDuration {
-    if (!_animationDuration) {
-        return 0.33;
-    }
-    return _animationDuration;
-}
+#pragma mark - touches
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (self.feedbackStyle == XMAnimationButtonFeedbackBegin) {
+    [self _performImpactFeedbackIfNeededForType:XMAnimationButtonFeedbackBegin];
 
-    }
-
-    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction animations:^{
-        self.transform = CGAffineTransformMakeScale(self.scale, self.scale);
-    } completion:nil];
+    [self _performScaleAnimation];
 
     [super touchesBegan:touches withEvent:event];
-}
-
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (self.impactFeedbackDifferentWhenTouchEnd && self.feedbackStyle == XMAnimationButtonFeedbackEnd) {
-        UITouch *touch = touches.allObjects.lastObject;
-        if (touch) {
-            CGPoint point = [touch locationInView:self];
-            if (self.feedbackStyle != XMAnimationButtonFeedbackNone) {
-                if (!CGRectContainsPoint(self.bounds, point)) {
-
-
-                } else {
-
-                }
-            }
-        }
-    }
-
-    WS
-    [UIView animateWithDuration:self.animationDuration
-                          delay:0.f
-         usingSpringWithDamping:self.usingSpringWithDamping
-          initialSpringVelocity:self.initialSpringVelocity
-                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-        weak_self.transform = CGAffineTransformIdentity;
-    } completion:nil];
-
-    [super touchesEnded:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -92,15 +36,9 @@
     if (touch) {
         CGPoint point = [touch locationInView:self];
         if (!CGRectContainsPoint(self.bounds, point)) {
-            WS
-            [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction animations:^{
-                weak_self.transform = CGAffineTransformIdentity;
-            } completion:nil];
+            [self _resetTransformAnimated];
         } else {
-            WS
-            [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction animations:^{
-                weak_self.transform = CGAffineTransformMakeScale(weak_self.scale, weak_self.scale);
-            } completion:nil];
+            [self _performScaleAnimation];
         }
     }
 
@@ -108,21 +46,62 @@
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (self.feedbackStyle != XMAnimationButtonFeedbackNone) {
+    [self _performImpactFeedbackIfNeededForType:XMAnimationButtonFeedbackEnd];
 
+    [self _resetTransformAnimated];
+    
+    [super touchesCancelled:touches withEvent:event];
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = touches.allObjects.lastObject;
+    CGPoint point = [touch locationInView:self];
+    if (CGRectContainsPoint(self.bounds, point)) {
+        [self _performImpactFeedbackIfNeededForType:XMAnimationButtonFeedbackEnd];
     }
 
-    WS
-    [UIView animateWithDuration:self.animationDuration
-                          delay:0.f
-         usingSpringWithDamping:self.usingSpringWithDamping
-          initialSpringVelocity:self.initialSpringVelocity
-                        options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-        weak_self.transform = CGAffineTransformIdentity;
-    } completion:nil];
+    [self _resetTransformAnimated];
 
-    [super touchesCancelled:touches withEvent:event];
+    [super touchesEnded:touches withEvent:event];
+}
+
+- (void)_resetTransformAnimated {
+    xm_springAnimation(self.animationDuration, self.usingSpringWithDamping, self.initialSpringVelocity, ^{
+        self.transform = CGAffineTransformIdentity;
+    });
+}
+
+- (void)_performScaleAnimation {
+    xm_animation(_animationDuration, ^{
+        self.transform = CGAffineTransformMakeTranslation(self.scale, self.scale);
+    });
+}
+
+- (void)_performImpactFeedbackIfNeededForType:(XMAnimationButtonFeedback)type {
+    if (self.feedbackOptions & type) {
+        xm_impactFeedbackOccured();
+    }
+}
+
+void xm_animation(CGFloat duration, XMBlock animations) {
+    [UIView animateWithDuration:duration
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
+                     animations:animations
+                     completion:nil];
+}
+
+void xm_springAnimation(CGFloat duration,
+                        CGFloat damping,
+                        CGFloat velocity,
+                        XMBlock animations) {
+    [UIView animateWithDuration:duration
+                          delay:0
+         usingSpringWithDamping:damping
+          initialSpringVelocity:velocity
+                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
+                     animations:animations
+                     completion:nil];
 }
 
 @end

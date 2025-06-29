@@ -36,4 +36,27 @@ UIKIT_STATIC_INLINE UIImage * xm_alwaysTemplateImage(NSString *imageName) {
 #define XMBlackColor [UIColor blackColor]
 #define XMWhiteColor [UIColor whiteColor]
 
+UIKIT_STATIC_INLINE void xm_impactFeedbackOccured(void) {
+    UIImpactFeedbackGenerator *impactFeedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
+    [impactFeedback impactOccurred];
+}
 
+UIKIT_STATIC_INLINE void xm_impactFeedbackOccurred(UIImpactFeedbackStyle style) {
+    UIImpactFeedbackGenerator *impactFeedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:style];
+    [impactFeedback impactOccurred];
+}
+
+UIKIT_STATIC_INLINE void xm_impactFeedbackOccurredWithIntensity(UIImpactFeedbackStyle style, CGFloat intensity) {
+    UIImpactFeedbackGenerator *impactFeedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:style];
+    if (@available(iOS 13.0, *)) {
+        [impactFeedback impactOccurredWithIntensity:intensity];
+    } else {
+        [impactFeedback impactOccurred];
+    }
+}
+
+#ifdef DEBUG
+#define XMLog(fmt, ...) NSLog((fmt), ##__VA_ARGS__)
+#else
+#define XMLog(fmt, ...)
+#endif

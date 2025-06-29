@@ -18,7 +18,7 @@ static NSMutableDictionary<NSString *, Class> *_factory;
     }
 
     NSString *identifier = [componentClass xm_identifier];
-    if (XMStringUtil.isBlank(identifier)) {
+    if (StringUtil.isBlank(identifier)) {
         return;
     }
 
@@ -32,7 +32,7 @@ static NSMutableDictionary<NSString *, Class> *_factory;
 }
 
 + (id<XMDashboardComponent>)componentWithIdentifier:(NSString *)identifier {
-    if (XMStringUtil.isBlank(identifier)) {
+    if (StringUtil.isBlank(identifier)) {
         return nil;
     }
     Class componentClass = _factory[identifier];

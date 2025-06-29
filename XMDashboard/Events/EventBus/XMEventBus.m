@@ -7,6 +7,7 @@
 
 #import "XMEventBus.h"
 #import <objc/runtime.h>
+#import <pthread.h>
 
 @implementation XMEventToken
 
@@ -30,8 +31,12 @@
 @end
 
 @implementation XMEventBus {
-    // 不用nslock，保证性能
-    dispatch_semaphore_t _lock;
+    pthread_mutex_t _lock;
+}
+
+- (void)dealloc
+{
+    pthread_mutex_destroy(&_lock);
 }
 
 + (instancetype)shared {
@@ -48,7 +53,7 @@
     self = [super init];
     if (self) {
         _subscribers = [NSMutableDictionary dictionary];
-        _lock = dispatch_semaphore_create(1);
+        pthread_mutex_init(&_lock, NULL);
     }
     return self;
 }
@@ -85,14 +90,14 @@
     wrapper.target = target;
     wrapper.token = token;
 
-    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
+    pthread_mutex_lock(&_lock);
     NSMutableArray *events = _subscribers[key];
     if (!events) {
         events = [NSMutableArray array];
         _subscribers[key] = events;
     }
     [events addObject:wrapper];
-    dispatch_semaphore_signal(_lock);
+    pthread_mutex_unlock(&_lock);
 
     objc_setAssociatedObject(token, @"unbind_block", ^{
         [self unsubscribe:token];
@@ -105,13 +110,13 @@
 - (void)unsubscribe:(XMEventToken *)token {
     if (!token) return;
 
-    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
+    pthread_mutex_lock(&_lock);
     [_subscribers enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSMutableArray<XMEventWrapper *> *events, BOOL *stop) {
         events = [events xm_select:^BOOL(XMEventWrapper *wrapper) {
             return wrapper.token != token;
         }].mutableCopy;
     }];
-    dispatch_semaphore_signal(_lock);
+    pthread_mutex_unlock(&_lock);
 }
 
 - (void)post:(id)event {
@@ -122,9 +127,9 @@
     } else {
         key = NSStringFromClass([event class]);
     }
-    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
+    pthread_mutex_lock(&_lock);
     NSArray *list = [_subscribers[key] copy];
-    dispatch_semaphore_signal(_lock);
+    pthread_mutex_unlock(&_lock);
 
     [list enumerateObjectsUsingBlock:^(XMEventWrapper *wrapper, NSUInteger idx, BOOL *stop) {
         if (wrapper.target) {
@@ -136,9 +141,9 @@
 - (void)post:(NSString *)eventName withObject:(id)object {
     if (!eventName) return;
 
-    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
+    pthread_mutex_lock(&_lock);
     NSArray *list = [_subscribers[eventName] copy];
-    dispatch_semaphore_signal(_lock);
+    pthread_mutex_unlock(&_lock);
 
     [list enumerateObjectsUsingBlock:^(XMEventWrapper *wrapper, NSUInteger idx, BOOL *stop) {
         if (wrapper.target) {

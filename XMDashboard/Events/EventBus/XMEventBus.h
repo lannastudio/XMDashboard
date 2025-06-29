@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id target;
 @property (nonatomic, copy) void(^handler)(id);
-@property (nonatomic, strong) XMEventToken *token;
+@property (nonatomic, weak) XMEventToken *token;
 
 @end
 

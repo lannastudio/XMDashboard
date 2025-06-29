@@ -5,7 +5,6 @@
 //  Created by lannastudio on 2025/5/17.
 //
 
-#import "XMDashboardCollectionViewCell.h"
 #import "XMDashboardComponentManager.h"
 #import "XMDashboardViewController.h"
 #import "XMDashboardViewModel.h"
@@ -57,6 +56,8 @@ static NSString * const XMDashboardCollectionViewCellId = @"com.lannastudio.dash
 #pragma mark - private
 
 - (void)commonInit {
+    _viewModel = [[XMDashboardViewModel alloc] init];
+
     [self _setupComponentManager];
     [self _setupSubviews];
 }

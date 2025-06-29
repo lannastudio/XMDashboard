@@ -13,19 +13,28 @@ typedef NS_ENUM(NSUInteger, XMObservableEventType) {
     XMObservableEventInit
 };
 
+typedef NS_ENUM(NSUInteger, XMObservableValuePolicy) {
+    XMObservableValuePolicyStrong,
+    XMObservableValuePolicyCopy
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^XMObservableCallback)(id _Nullable newValue, id _Nullable oldValue);
 
-// objective-c实际上是伪泛型，本质上是一种注释
-// 不能在类的实现里直接写 ValueType，也不能定义 block 的参数类型为 ValueType
+/**
+ @class XMObservable
+ @brief 适用于ViewController单向数据流场景的数据绑定工具
+ */
 @interface XMObservable<ValueType> : NSObject
 
-// 不能给值初始化，不然initBlock无法生效，而且语义不明确
+// default YES
+@property (nonatomic, assign) BOOL callbackOnMainThread;
+
+- (instancetype)initWithPolicy:(XMObservableValuePolicy)policy NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)strongObservable;
 + (instancetype)copyObservable;
-
-- (instancetype)init NS_UNAVAILABLE;
 
 // 注意：首次赋值的时候willChangeBlock会在initBlock之前调用
 - (void)addObserver:(id)observer
@@ -33,6 +42,9 @@ typedef void(^XMObservableCallback)(id _Nullable newValue, id _Nullable oldValue
            callback:(XMObservableCallback)block;
 - (void)addObserver:(id)observer
            callback:(XMObservableCallback)block;
+- (void)removeObserver:(id)observer forEvent:(XMObservableEventType)type;
+// objective-c实际上是伪泛型，本质上是一种注释
+// 不能在类的实现里直接写 ValueType，也不能定义 block 的参数类型为 ValueType
 - (void)xm_setValue:(ValueType)value;
 - (ValueType)xm_getValue;
 

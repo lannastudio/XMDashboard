@@ -19,7 +19,8 @@
 #import "XMConstants.h"
 #import "XMDashboardComponent.h"
 #import "XMObservable.h"
-#import "XMStringUtil.h"
+#import "StringUtil.h"
+#import "UIResponder+EventHandler.h"
 #import <Masonry/Masonry.h>
 
 #endif

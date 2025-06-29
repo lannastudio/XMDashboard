@@ -5,9 +5,9 @@
 //  Created by lannastudio on 2025/5/17.
 //
 
-#import "XMStringUtil.h"
+#import "StringUtil.h"
 
-@implementation XMStringUtil
+@implementation StringUtil
 
 + (BOOL (^)(NSString *string))isNotBlank {
     return ^BOOL(NSString *string) {
@@ -18,7 +18,7 @@
 
 + (BOOL (^)(NSString *string))isBlank {
     return ^BOOL(NSString *string) {
-        return !XMStringUtil.isNotBlank(string);
+        return !StringUtil.isNotBlank(string);
     };
 }
 
