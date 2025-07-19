@@ -9,8 +9,14 @@
 
 @implementation XMDashboardComponentFactory
 
-// 静态变量，进程不销毁就一直存在
 static NSMutableDictionary<NSString *, Class> *_factory;
+static dispatch_semaphore_t _lock;
+
++ (void)initialize
+{
+    _factory = [NSMutableDictionary dictionary];
+    _lock = dispatch_semaphore_create(1);
+}
 
 + (void)registerComponentClass:(Class)componentClass {
     if (![componentClass conformsToProtocol:@protocol(XMDashboardComponent)]) {
@@ -18,29 +24,31 @@ static NSMutableDictionary<NSString *, Class> *_factory;
     }
 
     NSString *identifier = [componentClass xm_identifier];
-    if (StringUtil.isBlank(identifier)) {
+    if (StringUtils.isBlank(identifier)) {
         return;
     }
 
-    // 保证只创建一次
-    // 线程安全, 单例
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _factory = [NSMutableDictionary dictionary];
-    });
+    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
+    NSAssert(!_factory[identifier], @"重复注册 component identifier: %@", identifier);
     _factory[identifier] = componentClass;
+    dispatch_semaphore_signal(_lock);
 }
 
 + (id<XMDashboardComponent>)componentWithIdentifier:(NSString *)identifier {
-    if (StringUtil.isBlank(identifier)) {
+    if (StringUtils.isBlank(identifier)) {
         return nil;
     }
+    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
     Class componentClass = _factory[identifier];
+    dispatch_semaphore_signal(_lock);
     return componentClass ? [[componentClass alloc] init] : nil;
 }
 
 + (NSArray<Class> *)allComponents {
-    return _factory.allValues;
+    dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
+    NSArray *components = _factory.allValues;
+    dispatch_semaphore_signal(_lock);
+    return components;
 }
 
 @end

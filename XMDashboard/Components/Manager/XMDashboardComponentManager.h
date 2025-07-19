@@ -11,12 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XMDashboardComponentManager : NSObject
 
+// 工程化，易拓展，项目复杂化后可动态调整order
+- (instancetype)initWithOrder:(NSArray<NSString *> *)order;
+
 - (void)triggerEvent:(SEL)selector;
 - (NSArray *)allComponents;
 - (void)reloadAllComponents;
-
-// 工程化，易拓展，项目复杂化后可动态调整order
-- (instancetype)initWithOrder:(NSArray<NSString *> *)order;
+- (id<XMDashboardComponent>)componentWithClass:(Class)componentClass;
 
 @end
 

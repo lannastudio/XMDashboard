@@ -13,7 +13,7 @@
     if (index < self.count) {
         return [self objectAtIndex:index];
     } else {
-        NSLog(@"[NSArray (Safe)] Trying to access object at an invalid index");
+        XMLog(@"[NSArray (Safe)] Trying to access object at an invalid index");
         return nil;
     }
 }
@@ -22,7 +22,7 @@
     if (self.count > 0) {
         return [self objectAtIndex:0];
     } else {
-        NSLog(@"[NSArray (Safe)] Trying to access first object in an empty array");
+        XMLog(@"[NSArray (Safe)] Trying to access first object in an empty array");
         return nil;
     }
 }
@@ -31,7 +31,7 @@
     if (self.count > 0) {
         return [self lastObject];
     } else {
-        NSLog(@"[NSArray (Safe)] Trying to access last object in an empty array");
+        XMLog(@"[NSArray (Safe)] Trying to access last object in an empty array");
         return nil;
     }
 }

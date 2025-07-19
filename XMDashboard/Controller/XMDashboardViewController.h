@@ -9,6 +9,8 @@
 
 @interface XMDashboardViewController : UIViewController
 
-
 @end
 
+@interface XMDashboardViewController (Context) <XMComponentContext>
+
+@end

@@ -9,4 +9,7 @@ target 'XMDashboard' do
    pod 'lottie-ios', :git => 'git@github.com:airbnb/lottie-ios.git', :tag => '4.4.0'
    pod 'DGCharts', :git => 'git@github.com:danielgindi/Charts.git'
    pod 'IGListKit', '~> 5.0.0'
+   pod 'AFNetworking', :git => 'git@github.com:AFNetworking/AFNetworking.git'
+   pod 'MBProgressHUD', '~>1.2.0'
 end
+

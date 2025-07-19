@@ -13,7 +13,7 @@
     if (object != nil) {
         [self addObject:object];
     } else {
-        NSLog(@"[NSMutableArray (Safe)] Trying to add a nil object");
+        XMLog(@"[NSMutableArray (Safe)] Trying to add a nil object");
     }
 }
 
@@ -21,7 +21,7 @@
     if (object != nil && index <= self.count) {
         [self insertObject:object atIndex:index];
     } else {
-        NSLog(@"[NSMutableArray (Safe)] Trying to insert a nil object or index out of bounds");
+        XMLog(@"[NSMutableArray (Safe)] Trying to insert a nil object or index out of bounds");
     }
 }
 
@@ -29,7 +29,7 @@
     if (index < self.count) {
         [self removeObjectAtIndex:index];
     } else {
-        NSLog(@"[NSMutableArray (Safe)] Trying to remove object at an invalid index");
+        XMLog(@"[NSMutableArray (Safe)] Trying to remove object at an invalid index");
     }
 }
 
@@ -37,7 +37,7 @@
     if (index < self.count) {
         return [self objectAtIndex:index];
     } else {
-        NSLog(@"[NSMutableArray (Safe)] Trying to access object at an invalid index");
+        XMLog(@"[NSMutableArray (Safe)] Trying to access object at an invalid index");
         return nil;
     }
 }
@@ -46,7 +46,7 @@
     if (self.count > 0) {
         return [self objectAtIndex:0];
     } else {
-        NSLog(@"[NSMutableArray (Safe)] Trying to access first object in an empty array");
+        XMLog(@"[NSMutableArray (Safe)] Trying to access first object in an empty array");
         return nil;
     }
 }
@@ -55,7 +55,7 @@
     if (self.count > 0) {
         return [self lastObject];
     } else {
-        NSLog(@"[NSMutableArray (Safe)] Trying to access last object in an empty array");
+        XMLog(@"[NSMutableArray (Safe)] Trying to access last object in an empty array");
         return nil;
     }
 }

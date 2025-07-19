@@ -111,11 +111,17 @@
     if (!token) return;
 
     pthread_mutex_lock(&_lock);
-    [_subscribers enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSMutableArray<XMEventWrapper *> *events, BOOL *stop) {
+    for (NSString *key in _subscribers.allKeys) {
+        NSArray *events = _subscribers[key];
         events = [events xm_select:^BOOL(XMEventWrapper *wrapper) {
             return wrapper.token != token;
-        }].mutableCopy;
-    }];
+        }];
+        if (events.count == 0) {
+            [_subscribers removeObjectForKey:key];
+        } else {
+            _subscribers[key] = events.mutableCopy;
+        }
+    }
     pthread_mutex_unlock(&_lock);
 }
 

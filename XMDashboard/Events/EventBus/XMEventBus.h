@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 typedef void(^XMEventBusBlock) (NSDictionary * _Nullable info);
-typedef void(^XMEventHandler) (id _Nullable event);
+typedef void(^XMEventHandler) (id _Nullable object);
 
 NS_ASSUME_NONNULL_BEGIN
 

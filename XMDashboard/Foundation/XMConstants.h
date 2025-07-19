@@ -17,6 +17,12 @@ typedef void(^XMBlock)(void);
 
 #define WS WEAK_OBJ_REF(self);
 
+#define SS \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wshadow\"") \
+__strong __typeof__(weak_self) self = weak_self; \
+_Pragma("clang diagnostic pop")
+
 #define XMSAFE_CAST(obj, Class)  ({                          \
     Class *castedObject = nil;                               \
     if ([obj isKindOfClass:[Class class]]) {                 \
@@ -60,3 +66,6 @@ UIKIT_STATIC_INLINE void xm_impactFeedbackOccurredWithIntensity(UIImpactFeedback
 #else
 #define XMLog(fmt, ...)
 #endif
+
+#define XMRGBAColor(r, g, b, a) ([UIColor colorWithRed:(r/255.0f) green:(g/255.0f) blue:(b/255.0f) alpha:(a)])
+#define XMRGBColor(r, g, b) KTRGBAColor(r, g, b, 1.f)
