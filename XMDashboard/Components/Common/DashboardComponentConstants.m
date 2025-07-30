@@ -10,3 +10,4 @@
 NSString * const TagDidSelectEventName = @"com.lannastudio.xm.dashboard.TagDidSelectEventName";
 NSString * const DashboardCollectionViewDidScrollEventName = @"com.lannastudio.xm.dashboard.DashboardCollectionViewDidScrollEventName";
 NSString * const TagDidReorderItemsEventName = @"com.lananstudio.xm.dashboard.TagDidReorderItemsEventName";
+NSString * const DashboardTopContainerViewWillHideEventName = @"com.lannastudio.xm.dashboard.DashboardTopContainerViewWillHideEventName";

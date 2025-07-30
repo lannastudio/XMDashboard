@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TagManagerCollectionViewCell : UICollectionViewCell
 
+@property (nonatomic, copy) XMBlock toggleBlock;
+
 - (void)updateWithItemName:(NSString *)name font:(UIFont *)font deleted:(BOOL)deleted;
 
 @end

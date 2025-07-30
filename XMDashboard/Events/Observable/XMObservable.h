@@ -7,10 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, XMObservableEventType) {
-    XMObservableEventWillChange,
-    XMObservableEventDidChange,
-    XMObservableEventInit
+typedef NS_OPTIONS(NSUInteger, XMObservableEventType) {
+    XMObservableEventNone        = 0,
+    XMObservableEventWillChange  = 1 << 0,
+    XMObservableEventDidChange   = 1 << 1,
+    XMObservableEventInit        = 1 << 2
 };
 
 typedef NS_ENUM(NSUInteger, XMObservableValuePolicy) {

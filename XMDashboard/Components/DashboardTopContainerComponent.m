@@ -8,6 +8,7 @@
 #import "DashboardComponentConstants.h"
 #import "DashboardScrollWrapper.h"
 #import "DashboardTopContainerComponent.h"
+#import "DashboardTopContainerViewStatusWrapper.h"
 #import "TagSelectionComponent.h"
 #import "XMDashboardComponentFactory.h"
 #import "XMEventBus.h"
@@ -57,20 +58,25 @@
 }
 
 - (void)_registerEvents {
+    WS
     [self.context.dashboardEventBus subscribeEventName:DashboardCollectionViewDidScrollEventName
                                                 target:self
                                                handler:^(DashboardScrollWrapper *wrapper) {
         BOOL shouldHideTopContainerView = wrapper.scrollView.contentOffset.y > 100;
-        if (shouldHideTopContainerView && self.topContainerView.alpha == 0) {
+        if (shouldHideTopContainerView && weak_self.topContainerView.alpha == 0) {
             return;
         }
+
+        DashboardTopContainerViewStatusWrapper *statusWrapper = [DashboardTopContainerViewStatusWrapper wrapperWithStatus:shouldHideTopContainerView];
+        [weak_self.context.dashboardEventBus postOnMainThread:DashboardTopContainerViewWillHideEventName
+                                                   withObject:statusWrapper];
         CGAffineTransform transform = CGAffineTransformIdentity;
         if (shouldHideTopContainerView) {
-            transform = CGAffineTransformMakeTranslation(0, -self.topContainerView.height);
+            transform = CGAffineTransformMakeTranslation(0, -weak_self.topContainerView.height);
         }
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            self.topContainerView.transform = transform;
-            self.topContainerView.alpha = shouldHideTopContainerView ? 0 : 1;
+            weak_self.topContainerView.transform = transform;
+            weak_self.topContainerView.alpha = shouldHideTopContainerView ? 0 : 1;
         } completion:nil];
     }];
 }

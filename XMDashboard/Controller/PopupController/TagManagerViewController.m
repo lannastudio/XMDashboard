@@ -22,7 +22,7 @@
 
 @property (nonatomic, copy) NSArray *items;
 @property (nonatomic, copy) NSArray *blockedItems;
-@property (nonatomic, copy) NSArray *objects;
+@property (nonatomic, strong) NSMutableArray *objects;
 @property (nonatomic, strong) TagManagerSectionModel *sectionModel;
 @property (nonatomic, strong) TagManagerSectionModel *blockedSectionModel;
 
@@ -62,12 +62,14 @@
             return [self _sizeWithItem:item];
         }];
         TagManagerSectionModel *sectionModel = [self _modelWithSizes:itemSizes items:_items deleted:NO];
-        TagManagerSectionModel *blockedModels = [self _modelWithSizes:blockedItemSizes items:_blockedItems deleted:YES];
+        TagManagerSectionModel *blockedModel = [self _modelWithSizes:blockedItemSizes items:_blockedItems deleted:YES];
         NSMutableArray *objects = [NSMutableArray arrayWithObject:[DashboardSection sectionWithTitle:@"正在展示"]];
         [objects addObject:sectionModel];
         [objects addObject:[DashboardSection sectionWithTitle:@"已移除"]];
-        [objects addObject:blockedModels];
+        [objects addObject:blockedModel];
         _objects = objects;
+        _sectionModel = sectionModel;
+        _blockedSectionModel = blockedModel;
     }
     return self;
 }
@@ -143,7 +145,82 @@
 
 - (IGListSectionController *)listAdapter:(IGListAdapter *)listAdapter sectionControllerForObject:(id)object {
     if ([object isKindOfClass:TagManagerSectionModel.class]) {
-        return [[TagManagerSectionController alloc] init];
+        TagManagerSectionController *sectionController = [[TagManagerSectionController alloc] init];
+        WS; WEAK_OBJ_REF(sectionController);
+        sectionController.didMoveBlock = ^(NSInteger fromIndex, NSInteger toIndex) {
+            // 确定操作哪个 sectionModel
+            BOOL isNormal = (weak_sectionController.section == 1);
+            NSMutableArray *items = (isNormal
+                                     ? weak_self.sectionModel.items
+                                     : weak_self.blockedSectionModel.items).mutableCopy;
+
+            // 安全判断，避免越界
+            if (fromIndex < 0 || fromIndex >= items.count ||
+                toIndex < 0   || toIndex > items.count ||
+                fromIndex == toIndex) {
+                return;
+            }
+
+            // 重排
+            id object = [items safe_objectAtIndex:fromIndex];
+            [items removeObjectAtIndex:fromIndex];
+            // toIndex 可能等于 items.count（插到最后），safe_insertObject 要兼容
+            [items safe_insertObject:object atIndex:toIndex];
+
+            // 尺寸同步
+            NSArray *itemSizes = [items xm_map:^id (TagSelectionItem *item) {
+                return [weak_self _sizeWithItem:item];
+            }];
+
+            // 更新 model
+            if (isNormal) {
+                weak_self.sectionModel = [weak_self _modelWithSizes:itemSizes items:items deleted:NO];
+                [weak_self.objects removeObjectAtIndex:1];
+                [weak_self.objects insertObject:weak_self.sectionModel atIndex:1];
+                [DashboardSectionManager cacheItems:items];
+            } else {
+                weak_self.blockedSectionModel = [weak_self _modelWithSizes:itemSizes items:items deleted:YES];
+                [weak_self.objects removeObjectAtIndex:3];
+                [weak_self.objects addObject:weak_self.blockedSectionModel];
+                [DashboardSectionManager blockComponentItems:items];
+            }
+
+            [weak_self.adapter performUpdatesAnimated:YES completion:nil];
+            SafeBlock(weak_self.tagsDidChangeBlock);
+        };
+        sectionController.userDidClickCellBlock = ^(NSIndexPath *indexPath) {
+            NSMutableArray *items = weak_self.sectionModel.items.mutableCopy;
+            NSMutableArray *blockedItems = weak_self.blockedSectionModel.items.mutableCopy;
+
+            if (indexPath.section == 1) {
+                id object = [items safe_objectAtIndex:indexPath.item];
+                [items safe_removeObject:object];
+                [blockedItems safe_addObject:object];
+            } else {
+                id object = [blockedItems safe_objectAtIndex:indexPath.item];
+                [blockedItems safe_removeObject:object];
+                [items safe_addObject:object];
+            }
+            NSArray *itemSizes = [items xm_map:^id (TagSelectionItem *item) {
+                return [weak_self _sizeWithItem:item];
+            }];
+            NSArray *blockedItemSizes = [blockedItems xm_map:^id (id obj) {
+                return [weak_self _sizeWithItem:obj];
+            }];
+            weak_self.sectionModel = [weak_self _modelWithSizes:itemSizes items:items deleted:NO];
+            [weak_self.objects removeObjectAtIndex:1];
+            [weak_self.objects insertObject:weak_self.sectionModel atIndex:1];
+            [DashboardSectionManager cacheItems:items];
+            weak_self.blockedSectionModel = [weak_self _modelWithSizes:blockedItemSizes items:blockedItems deleted:YES];
+            [weak_self.objects removeObjectAtIndex:3];
+            [weak_self.objects addObject:weak_self.blockedSectionModel];
+            [DashboardSectionManager blockComponentItems:blockedItems];
+
+            // 刷新 UI
+            [weak_self.adapter performUpdatesAnimated:YES completion:nil];
+            SafeBlock(weak_self.tagsDidChangeBlock);
+        };
+        return sectionController;
     }
     return [[DashboardTitleSectionController alloc] initWithSectionInsets:UIEdgeInsetsMake(15, 4, 5, 4)];
 }

@@ -15,10 +15,13 @@
 - (NSArray *)toDashboardInfoList {
     if (!_infoList) {
         NSArray *sortedKeys = [self.pageEnterCountMap keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            return [obj2 compare:obj1]; // 降序
+            return [obj2 compare:obj1];
         }];
         NSMutableArray *result = [NSMutableArray array];
         for (NSString *pageKey in sortedKeys) {
+            if ([pageKey isEqual:@"record_duration"]) {
+                continue;
+            }
             NSString *pageName = self.pageNameMap[pageKey] ?: pageKey;
             NSString *info = [NSString stringWithFormat:@"%@", self.pageEnterCountMap[pageKey]];
             [result addObject:[[DashboardInfo alloc] initWithName:pageName info:info]];

@@ -6,12 +6,14 @@
 //
 
 #import "DashboardBottomBarComponent.h"
+#import "DashboardServiceComponent.h"
 #import "TagManagerViewController.h"
 #import "UIView+Toast.h"
 #import "UIViewController+XMContainer.h"
 #import "XMAnimationButton.h"
 #import "XMDashboardComponentFactory.h"
 #import "XMDashboardViewModel.h"
+#import <MBProgressHUD/MBProgressHUD.h>
 
 @interface DashboardBottomBarComponent ()
 
@@ -89,7 +91,16 @@
     [self.context xm_addChildController:tagManagerController layoutViews:^(UIView *view) {
         view.frame = weak_self.context.view.bounds;
     }];
+    tagManagerController.tagsDidChangeBlock = ^{
+        [weak_self.context.dashboardViewModel updateWhenItemsDidReorder];
+    };
     [tagManagerController appearWithAnimation];
+}
+
+- (void)_showDatePickerController:(XMAnimationButton *)sender {
+    id<XMDashboardComponent> component = [self.context componentWithClass:DashboardServiceComponent.class];
+    DashboardServiceComponent *serviceComponent = XMSAFE_CAST(component, DashboardServiceComponent);
+    [serviceComponent showDateSelectionPopupViewController];
 }
 
 #pragma mark - getter
@@ -123,6 +134,7 @@
 - (XMAnimationButton *)dateSelectionButton {
     if (!_dateSelectionButton) {
         _dateSelectionButton = [self _commonButtonWithSystemImageName:@"calendar"];
+        [_dateSelectionButton addTarget:self action:@selector(_showDatePickerController:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _dateSelectionButton;
 }

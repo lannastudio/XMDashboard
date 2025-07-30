@@ -35,6 +35,10 @@
     TagManagerCollectionViewCell *cell = [self.collectionContext dequeueReusableCellOfClass:TagManagerCollectionViewCell.class forSectionController:self atIndex:index];
     TagSelectionItem *item = [_model.items safe_objectAtIndex:index];
     [cell updateWithItemName:item.name font:_model.cellFont deleted:_model.deleted];
+    WS
+    cell.toggleBlock = ^{
+        SafeBlock(weak_self.userDidClickCellBlock, [NSIndexPath indexPathForItem:index inSection:weak_self.section]);
+    };
     return cell;
 }
 
@@ -54,6 +58,8 @@
     return YES;
 }
 
-
+- (void)moveObjectFromIndex:(NSInteger)sourceIndex toIndex:(NSInteger)destinationIndex {
+    SafeBlock(self.didMoveBlock, sourceIndex, destinationIndex);
+}
 
 @end

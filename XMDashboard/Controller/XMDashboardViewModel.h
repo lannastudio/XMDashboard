@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateWhenItemsDidReorder;
 - (BOOL)isPerformingUpdate;
 
+- (void)updateSelectedDate:(NSDate *)date completion:(nullable XMBlock)completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

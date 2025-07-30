@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TagManagerViewController : XMPopupBaseViewController
 
+@property (nonatomic, copy) XMBlock tagsDidChangeBlock;
+
 - (instancetype)initWithItems:(NSArray<id<TagSelectionItemDelegate>> *)items;
 
 @end

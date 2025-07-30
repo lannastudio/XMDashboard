@@ -11,6 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TagManagerSectionController : IGListSectionController
 
+@property (nonatomic, copy) void(^userDidClickCellBlock)(NSIndexPath *indexPath);
+
+@property (nonatomic, copy) void(^didMoveBlock)(NSInteger fromIndex, NSInteger toIndex);
 
 @end
 

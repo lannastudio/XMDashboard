@@ -5,8 +5,9 @@
 //  Created by lannastudio on 2025/7/4.
 //
 
-#import "DashboardSectionManager.h"
 #import "DashboardModel.h"
+#import "DashboardSectionManager.h"
+#import "TagSelectionItem.h"
 
 static NSString * kDashboardSectionUserDefaultsKey = @"com.lannastudio.dashboard.kDashboardSectionUserDefaultsKey";
 static NSString * kDashboardBlockedItemsUserDefaultsKey = @"com.lannastudio.dashboard.kDashboardBlockedItemsUserDefaultsKey";
@@ -14,7 +15,7 @@ static NSString * kDashboardBlockedItemsUserDefaultsKey = @"com.lannastudio.dash
 @implementation DashboardSectionManager
 
 + (NSArray *)sortedItemsWithOrderCache:(NSArray *)items {
-    NSArray *cache = [self cacheSections];
+    NSArray *cache = [self cachedItems];
     if (!cache) {
         return items;
     }
@@ -32,29 +33,28 @@ static NSString * kDashboardBlockedItemsUserDefaultsKey = @"com.lannastudio.dash
 }
 
 + (void)cacheItems:(NSArray *)items {
-    [[NSUserDefaults standardUserDefaults] setValue:items forKey:kDashboardSectionUserDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] setObject:[self _itemsToClassString:items] forKey:kDashboardSectionUserDefaultsKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+ (NSArray *)cacheSections {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:kDashboardSectionUserDefaultsKey];
++ (NSArray *)cachedItems {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:kDashboardSectionUserDefaultsKey];
 }
 
 + (NSArray *)blockedComponentItems {
-    NSArray *blockedItems = [[NSUserDefaults standardUserDefaults] valueForKey:kDashboardBlockedItemsUserDefaultsKey];
+    NSArray *blockedItems = [[NSUserDefaults standardUserDefaults] objectForKey:kDashboardBlockedItemsUserDefaultsKey];
     return blockedItems ?: @[];
 }
 
 + (void)blockComponentItems:(NSArray *)items {
-    if (CollectionUtils.isEmpty(items)) {
-        return;
-    }
-    NSArray *blockedItems = [[NSUserDefaults standardUserDefaults] arrayForKey:kDashboardBlockedItemsUserDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] setObject:[self _itemsToClassString:items] forKey:kDashboardBlockedItemsUserDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
 
-    NSMutableSet *set = blockedItems ? [NSMutableSet setWithArray:blockedItems] : [NSMutableSet set];
-    [set addObjectsFromArray:items];
-
-    [[NSUserDefaults standardUserDefaults] setObject:[set allObjects] forKey:kDashboardBlockedItemsUserDefaultsKey];
++ (NSArray *)_itemsToClassString:(NSArray *)items {
+    return [items xm_map:^id (TagSelectionItem *item) {
+        return item.modelClassString;
+    }];
 }
 
 @end

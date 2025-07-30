@@ -37,6 +37,7 @@
             make.right.equalTo(self.contentView).offset(-2-1);
             make.width.height.equalTo(self.contentView.mas_height);
         }];
+        [_toggleButton addTarget:self action:@selector(_toggle:) forControlEvents:UIControlEventTouchUpInside];
 
         self.backgroundColor = XMClearColor;
         self.contentView.backgroundColor = XMRGBColor(245, 245, 245);
@@ -48,6 +49,10 @@
     [super layoutSubviews];
 
     [self.contentView kt_addRoundCornerWithCornerRadius:12];
+}
+
+- (void)_toggle:(XMExtensionButton *)sender {
+    SafeBlock(self.toggleBlock);
 }
 
 #pragma mark - public

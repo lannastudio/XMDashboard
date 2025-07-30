@@ -63,8 +63,15 @@
            forEvent:(XMObservableEventType)type
            callback:(XMObservableCallback)block {
     pthread_mutex_lock(&_lock);
-    NSMapTable *map = [self _getMapTableWithType:type];
-    [map setObject:[block copy] forKey:observer];
+    if (type & XMObservableEventWillChange) {
+        [_willChangeObservers setObject:[block copy] forKey:observer];
+    }
+    if (type & XMObservableEventDidChange) {
+        [_didChangeObservers setObject:[block copy] forKey:observer];
+    }
+    if (type & XMObservableEventInit) {
+        [_initObservers setObject:[block copy] forKey:observer];
+    }
     pthread_mutex_unlock(&_lock);
 }
 
@@ -74,8 +81,15 @@
 
 - (void)removeObserver:(id)observer forEvent:(XMObservableEventType)type {
     pthread_mutex_lock(&_lock);
-    NSMapTable *map = [self _getMapTableWithType:type];
-    [map removeObjectForKey:observer];
+    if (type & XMObservableEventWillChange) {
+        [_willChangeObservers removeObjectForKey:observer];
+    }
+    if (type & XMObservableEventDidChange) {
+        [_didChangeObservers removeObjectForKey:observer];
+    }
+    if (type & XMObservableEventInit) {
+        [_initObservers removeObjectForKey:observer];
+    }
     pthread_mutex_unlock(&_lock);
 }
 
@@ -189,14 +203,6 @@
         SafeMainThreadDispatch(block);
     } else {
         SafeBlock(block);
-    }
-}
-
-- (NSMapTable *)_getMapTableWithType:(XMObservableEventType)type {
-    switch (type) {
-        case XMObservableEventDidChange: return _didChangeObservers;
-        case XMObservableEventWillChange: return _willChangeObservers;
-        case XMObservableEventInit: return _initObservers;
     }
 }
 

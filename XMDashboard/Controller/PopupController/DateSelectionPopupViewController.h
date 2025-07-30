@@ -11,6 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DateSelectionPopupViewController : XMPopupBaseViewController
 
+@property (nonatomic, copy) void (^onDateChangedBlock)(NSDate *date);
+
++ (instancetype)showWithContainer:(UIViewController *)container
+                     selectedDate:(NSDate *)selectedDate;
+
 @end
 
 NS_ASSUME_NONNULL_END

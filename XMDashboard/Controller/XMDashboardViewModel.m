@@ -20,6 +20,7 @@ static NSString * const kDashboardRequestPath = @"/api/events/dashboard";
 @property (nonatomic, strong) XMObservable<NSArray *> *dashboardInfoList;
 @property (nonatomic, strong) XMObservable<NSArray *> *orderedOriginalItems;
 @property (nonatomic, assign, getter=isPerformingUpdate) BOOL performingUpdate;
+@property (nonatomic, copy) NSArray *originalItems;
 
 @end
 
@@ -41,6 +42,7 @@ static NSString * const kDashboardRequestPath = @"/api/events/dashboard";
     return self;
 }
 
+/// TODO: 应该同时返回状态码
 - (void)requestWithCompletion:(void (^)(NSError *))completion {
     self.performingUpdate = YES;
     [XMNetworkingManager requestWithPath:kDashboardRequestPath
@@ -49,6 +51,7 @@ static NSString * const kDashboardRequestPath = @"/api/events/dashboard";
         if (responseObject.code == CommonResponseResultSuccess) {
             DashboardModel *model = [DashboardModel mj_objectWithKeyValues:responseObject.data];
             [self _updateOrderedOriginalItems:model.sectionItems];
+            self.originalItems = model.sectionItems.copy;
         }
         self.performingUpdate = NO;
         SafeBlock(completion, error);
@@ -68,14 +71,43 @@ static NSString * const kDashboardRequestPath = @"/api/events/dashboard";
 }
 
 - (void)updateWhenItemsDidReorder {
-    [self _updateOrderedOriginalItems:_orderedOriginalItems.xm_getValue];
+    [self _updateOrderedOriginalItems:_originalItems];
+}
+
+- (void)updateSelectedDate:(NSDate *)date completion:(XMBlock)completion {
+    /// 这里先模拟请求不同日期
+    WS
+    [self requestWithCompletion:^(NSError *error) {
+        if (!error) {
+            [weak_self.selectedDate xm_setValue:date];
+        }
+        SafeBlock(completion);
+    }];
 }
 
 #pragma mark - private
 
 - (void)_updateOrderedOriginalItems:(NSArray *)items {
     NSArray *cache = [DashboardSectionManager sortedItemsWithOrderCache:items];
+    cache = [self _blockedItemsIfNeeded:cache];
     [self.orderedOriginalItems xm_setValue:cache];
+}
+
+- (NSArray *)_blockedItemsIfNeeded:(NSArray *)items {
+    NSArray *blockedItems = [DashboardSectionManager blockedComponentItems];
+    if (CollectionUtils.isEmpty(blockedItems)) {
+        return items;
+    }
+    NSSet *blockedItemsSet = [NSSet setWithArray:blockedItems];
+    NSMutableArray *result = [NSMutableArray array];
+    for (id item in items) {
+        Class klass = [item class];
+        NSString *classString = NSStringFromClass(klass);
+        if (![blockedItemsSet containsObject:classString]) {
+            [result addObject:item];
+        }
+    }
+    return result;
 }
 
 - (void)_updateDashboardSectionItems {

@@ -10,3 +10,4 @@
 UIKIT_EXTERN NSString * const TagDidSelectEventName;
 UIKIT_EXTERN NSString * const DashboardCollectionViewDidScrollEventName;
 UIKIT_EXTERN NSString * const TagDidReorderItemsEventName;
+UIKIT_EXTERN NSString * const DashboardTopContainerViewWillHideEventName;

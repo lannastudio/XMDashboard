@@ -50,9 +50,7 @@
 }
 
 - (void)reorderItems:(NSArray *)items {
-    [DashboardSectionManager cacheItems:[items xm_map:^id (TagSelectionItem *item) {
-        return item.modelClassString;
-    }]];
+    [DashboardSectionManager cacheItems:items];
 
     SafeBlock(self.didReorderItemsBlock);
 }
