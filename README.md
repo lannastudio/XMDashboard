@@ -1,6 +1,6 @@
 # XMDashboard
 
-iOS 记账统计与管理 Dashboard 组件
+寻梦记账自用看板
 
 ## 1. 安装
 
